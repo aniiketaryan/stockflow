@@ -80,12 +80,12 @@ function ProductForm({ initial = INIT, onSubmit, loading }) {
   );
 }
 
-const getStockColor = (qty) => {
-  if (qty === 0) return 'var(--accent-danger)';
-  if (qty <= 5) return 'var(--accent-danger)';
-  if (qty <= 10) return 'var(--accent-warning)';
-  return 'var(--accent-success)';
-};
+// const getStockColor = (qty) => {
+//   if (qty === 0) return 'var(--accent-danger)';
+//   if (qty <= 5) return 'var(--accent-danger)';
+//   if (qty <= 10) return 'var(--accent-warning)';
+//   return 'var(--accent-success)';
+// };
 function ProductCard({
   product,
   onEdit,

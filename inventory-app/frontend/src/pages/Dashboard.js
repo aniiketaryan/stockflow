@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Package, Users, ShoppingCart, DollarSign, AlertTriangle, TrendingUp, ArrowRight } from 'lucide-react';
+import {
+  Package,
+  Users,
+  ShoppingCart,
+  DollarSign,
+  AlertTriangle
+} from 'lucide-react';
 import { dashboardAPI } from '../utils/api';
 
 const StatCard = ({ label, value, icon: Icon, color, prefix = '' }) => (
