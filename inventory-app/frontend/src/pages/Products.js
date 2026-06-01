@@ -86,6 +86,96 @@ const getStockColor = (qty) => {
   if (qty <= 10) return 'var(--accent-warning)';
   return 'var(--accent-success)';
 };
+function ProductCard({
+  product,
+  onEdit,
+  onDelete
+}) {
+
+  const stockStatus =
+    product.quantity === 0
+      ? "Out of Stock"
+      : product.quantity <= 10
+      ? "Low Stock"
+      : "In Stock";
+
+  const stockColor =
+    product.quantity === 0
+      ? "var(--accent-danger)"
+      : product.quantity <= 10
+      ? "var(--accent-warning)"
+      : "var(--accent-success)";
+
+  return (
+    <div className="product-card">
+
+      <div className="product-card-top">
+
+        <span className="product-category">
+          {product.category || "General"}
+        </span>
+
+        <div className="product-actions">
+
+          <button
+            className="btn btn-ghost btn-icon"
+            onClick={() => onEdit(product)}
+          >
+            <Pencil size={15} />
+          </button>
+
+          <button
+            className="btn btn-ghost btn-icon"
+            onClick={() => onDelete(product)}
+          >
+            <Trash2 size={15} />
+          </button>
+
+        </div>
+
+      </div>
+
+      <h3 className="product-name">
+        {product.name}
+      </h3>
+
+      <div className="product-sku">
+        {product.sku}
+      </div>
+
+      <p className="product-description">
+        {product.description ||
+          "No description available"}
+      </p>
+
+      <div className="product-footer">
+
+        <div>
+
+          <div className="product-price">
+            ${product.price.toFixed(2)}
+          </div>
+
+          <div
+            style={{
+              color: stockColor,
+              fontSize: 13
+            }}
+          >
+            {stockStatus}
+          </div>
+
+        </div>
+
+        <div className="product-stock-circle">
+          {product.quantity}
+        </div>
+
+      </div>
+
+    </div>
+  );
+}
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -148,10 +238,33 @@ export default function Products() {
 
   return (
     <div>
+      <div className="products-hero">
+
+  <div>
+
+    <div className="hero-badge">
+      INVENTORY MANAGEMENT
+    </div>
+
+    <h1>
+      Products.
+      <br />
+      Organized Beautifully.
+    </h1>
+
+    <p>
+      Manage stock, pricing,
+      inventory levels and
+      categories in one place.
+    </p>
+
+  </div>
+
+</div>
       <div className="page-header">
         <div>
-          <div className="page-title">Products</div>
-          <div className="page-subtitle">{products.length} products in inventory</div>
+          <div className="page-title">Inventry</div>
+          <div className="page-subtitle">Manage products across your business.</div>
         </div>
         <button className="btn btn-primary" onClick={() => setShowAdd(true)}>
           <Plus size={15} /> Add Product
@@ -177,59 +290,20 @@ export default function Products() {
               <p>{search ? 'Try a different search term' : 'Add your first product to get started'}</p>
             </div>
           ) : (
-            <table>
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>SKU</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>Stock</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map(p => (
-                  <tr key={p.id}>
-                    <td>
-                      <div className="td-primary">{p.name}</div>
-                      {p.description && <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{p.description.substring(0, 50)}{p.description.length > 50 ? '...' : ''}</div>}
-                    </td>
-                    <td><span className="sku-pill">{p.sku}</span></td>
-                    <td>{p.category ? <span className="badge badge-purple">{p.category}</span> : <span style={{ color: 'var(--text-muted)' }}>—</span>}</td>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--accent-success)' }}>
-                      ${p.price.toFixed(2)}
-                    </td>
-                    <td>
-                      <div className="stock-bar-wrap">
-                        <div className="stock-bar">
-                          <div className="stock-bar-fill" style={{
-                            width: `${Math.min(p.quantity / 100 * 100, 100)}%`,
-                            background: getStockColor(p.quantity)
-                          }} />
-                        </div>
-                        <span style={{ fontSize: 13, color: getStockColor(p.quantity), fontFamily: 'var(--font-mono)', minWidth: 28 }}>
-                          {p.quantity}
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', gap: 4 }}>
-                        <button className="btn btn-ghost btn-icon" title="Edit"
-                          onClick={() => setEditing(p)}>
-                          <Pencil size={14} />
-                        </button>
-                        <button className="btn btn-ghost btn-icon" title="Delete"
-                          onClick={() => setDeleting(p)}
-                          style={{ color: 'var(--accent-danger)' }}>
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="products-grid">
+
+  {filtered.map(product => (
+
+    <ProductCard
+      key={product.id}
+      product={product}
+      onEdit={setEditing}
+      onDelete={setDeleting}
+    />
+
+  ))}
+
+</div>
           )}
         </div>
       </div>

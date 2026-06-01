@@ -29,40 +29,266 @@ function CustomerForm({ onSubmit, loading }) {
   };
 
   return (
-    <form onSubmit={submit}>
-      <div className="form-grid" style={{ gap: 16 }}>
-        <div className="form-group">
-          <label className="form-label">Full Name *</label>
-          <input className={`form-input${errors.full_name ? ' error' : ''}`} value={form.full_name}
-            onChange={e => set('full_name', e.target.value)} placeholder="John Doe" />
-          {errors.full_name && <span className="form-error">{errors.full_name}</span>}
+  <div>
+
+    {/* HERO SECTION */}
+    <div className="customers-hero">
+      <div>
+        <div className="hero-badge">
+          CUSTOMER RELATIONSHIP MANAGEMENT
         </div>
-        <div className="form-group">
-          <label className="form-label">Email Address *</label>
-          <input type="email" className={`form-input${errors.email ? ' error' : ''}`} value={form.email}
-            onChange={e => set('email', e.target.value)} placeholder="john@example.com" />
-          {errors.email && <span className="form-error">{errors.email}</span>}
+
+        <h1>
+          Customers.
+          <br />
+          Built Around People.
+        </h1>
+
+        <p>
+          Manage customer relationships, contact information,
+          and business interactions from one beautiful workspace.
+        </p>
+      </div>
+    </div>
+
+    <div className="page-header">
+      <div>
+        <div className="page-title">
+          People.
         </div>
-        <div className="form-group">
-          <label className="form-label">Phone Number</label>
-          <input type="tel" className="form-input" value={form.phone}
-            onChange={e => set('phone', e.target.value)} placeholder="+1 (555) 000-0000" />
-        </div>
-        <div className="form-group">
-          <label className="form-label">Address</label>
-          <textarea className="form-input" rows={2} value={form.address}
-            onChange={e => set('address', e.target.value)} placeholder="Street, City, Country" />
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, paddingTop: 4 }}>
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Saving...' : 'Add Customer'}
-          </button>
+
+        <div className="page-subtitle">
+          {customers.length} active customer profiles
         </div>
       </div>
-    </form>
+
+      <button
+        className="btn btn-primary"
+        onClick={() => setShowAdd(true)}
+      >
+        <Plus size={15} />
+        Add Customer
+      </button>
+    </div>
+
+    <div className="card">
+
+      <div className="card-header">
+
+        <div className="search-wrapper">
+          <Search size={15} />
+
+          <input
+            className="form-input search-input"
+            placeholder="Search customers..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <span className="topbar-badge">
+          {filtered.length} results
+        </span>
+
+      </div>
+
+      <div className="card-body">
+
+        {loading ? (
+
+          <div className="loading-spinner">
+            <div className="spinner" />
+          </div>
+
+        ) : filtered.length === 0 ? (
+
+          <div className="empty-state">
+            <Users size={42} />
+            <h3>No customers found</h3>
+            <p>
+              {search
+                ? 'Try a different search term'
+                : 'Add your first customer to get started'}
+            </p>
+          </div>
+
+        ) : (
+
+          <div className="customers-grid">
+
+            {filtered.map((customer) => (
+
+              <div
+                key={customer.id}
+                className="customer-card"
+              >
+
+                <div className="customer-top">
+
+                  <div className="customer-avatar">
+                    {customer.full_name
+                      ?.split(' ')
+                      .map((n) => n[0])
+                      .join('')
+                      .slice(0, 2)
+                      .toUpperCase()}
+                  </div>
+
+                  <button
+                    className="btn btn-ghost btn-icon"
+                    onClick={() => setDeleting(customer)}
+                    style={{
+                      color: 'var(--accent-danger)'
+                    }}
+                  >
+                    <Trash2 size={15} />
+                  </button>
+
+                </div>
+
+                <h3 className="customer-name">
+                  {customer.full_name}
+                </h3>
+
+                <div className="customer-meta">
+
+                  <div className="customer-info">
+                    <Mail size={14} />
+                    {customer.email}
+                  </div>
+
+                  {customer.phone && (
+                    <div className="customer-info">
+                      <Phone size={14} />
+                      {customer.phone}
+                    </div>
+                  )}
+
+                </div>
+
+                {customer.address && (
+                  <div className="customer-address">
+                    {customer.address}
+                  </div>
+                )}
+
+                <div className="customer-footer">
+
+                  <span className="customer-date">
+                    Joined{" "}
+                    {customer.created_at
+                      ? new Date(
+                          customer.created_at
+                        ).toLocaleDateString()
+                      : "Recently"}
+                  </span>
+
+                </div>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        )}
+
+      </div>
+
+    </div>
+
+    {showAdd && (
+      <Modal
+        title="Add New Customer"
+        onClose={() => setShowAdd(false)}
+      >
+        <CustomerForm
+          onSubmit={handleAdd}
+          loading={saving}
+        />
+      </Modal>
+    )}
+
+    {deleting && (
+      <ConfirmDialog
+        title="Delete Customer"
+        message={`Delete "${deleting.full_name}"? Their order history will also be removed.`}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleting(null)}
+        loading={deleteLoading}
+      />
+    )}
+
+  </div>
+);
+}
+function CustomerCard({ customer, onDelete }) {
+  const initials = customer.full_name
+    ?.split(' ')
+    .map(n => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+  return (
+    <div className="customer-card">
+
+      <div className="customer-top">
+
+        <div className="customer-avatar">
+          {initials}
+        </div>
+
+        <button
+          className="btn btn-ghost btn-icon"
+          onClick={() => onDelete(customer)}
+          style={{ color: 'var(--accent-danger)' }}
+        >
+          <Trash2 size={15} />
+        </button>
+
+      </div>
+
+      <h3 className="customer-name">
+        {customer.full_name}
+      </h3>
+
+      <div className="customer-meta">
+
+        <div className="customer-info">
+          <Mail size={14} />
+          {customer.email}
+        </div>
+
+        {customer.phone && (
+          <div className="customer-info">
+            <Phone size={14} />
+            {customer.phone}
+          </div>
+        )}
+
+      </div>
+
+      {customer.address && (
+        <div className="customer-address">
+          {customer.address}
+        </div>
+      )}
+
+      <div className="customer-footer">
+
+        <span className="customer-date">
+          Joined{" "}
+          {customer.created_at
+            ? new Date(customer.created_at).toLocaleDateString()
+            : "Recently"}
+        </span>
+
+      </div>
+
+    </div>
   );
 }
-
 export default function Customers() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
