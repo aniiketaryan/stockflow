@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Search, ShoppingCart, Eye, X, ChevronDown } from 'lucide-react';
+import { Plus, Trash2, Search, ShoppingCart, Eye, X } from 'lucide-react';
 import { ordersAPI, productsAPI, customersAPI } from '../utils/api';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
